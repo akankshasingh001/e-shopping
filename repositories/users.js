@@ -15,6 +15,7 @@ class UsersRepository {
       fs.writeFileSync(this.filename, '[]');
     }
   }
+  //access all users
   async getAll() {
     return JSON.parse(
       await fs.promises.readFile(this.filename, {
@@ -22,7 +23,7 @@ class UsersRepository {
       })
     );
   }
-
+  //create user
   async create(attrs) {
     attrs.id = this.randomId();
     //{email: 'abc@gmail.com',password:'abc123'}
@@ -37,15 +38,20 @@ class UsersRepository {
       JSON.stringify(records, null, 2)
     );
   }
+  //Created random ID using crypto(randomBytes)
   randomId() {
     return crypto.randomBytes(4).toString('hex');
+  }
+  //getsingle user by id
+  async getOne(id) {
+    const records = await this.getAll();
+    return records.find(record => record.id === id);
   }
 }
 const test = async () => {
   const repo = new UsersRepository('users.json');
-  await repo.create({ email: 'test@test.com', password: 'password' });
-  const users = await repo.getAll();
-  console.log(users);
+  const user = await repo.getOne('4640523a');
+  console.log(user);
 };
 
 test();
