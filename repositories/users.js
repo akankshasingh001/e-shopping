@@ -48,7 +48,7 @@ class UsersRepository {
     const [hashed, salt] = saved.split('.'); //Destructring Array
     const hashedSupplied = await scrypt(supplied, salt, 64);
 
-    return hashed === hashedSupplied;
+    return hashed === hashedSupplied.toString('hex');
   }
   async writeAll(records) {
     //Write the updated 'records' array back to this.filename
