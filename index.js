@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser'); // Middleware file imported 3rd party lib
-
+const usersRepo = require('./repositories/users');
 const app = express();
 //Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -17,8 +17,15 @@ app.get('/', (req, res) => {
   </div>`);
 });
 
-app.post('/', (req, res) => {
-  console.log(req.body);
+app.post('/', async (req, res) => {
+  const { email, password, passwordConfirmation } = req.body;
+  const existingUser = await usersRepo.getOneBy({ email });
+  if (existingUser) {
+    return res.send('Email already in use.');
+  }
+  if (password !== passwordConfirmation) {
+    return res.send('Password must match');
+  }
   res.send('Account Created');
 });
 
