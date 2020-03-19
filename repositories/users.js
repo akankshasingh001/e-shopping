@@ -30,6 +30,7 @@ class UsersRepository {
     const records = await this.getAll(); // this will give list of users
     records.push(attrs); // push new user
     await this.writeAll(records);
+    return attrs;
   }
   async writeAll(records) {
     //Write the updated 'records' array back to this.filename
