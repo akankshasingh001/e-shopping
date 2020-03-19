@@ -1,10 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser'); // Middleware file imported 3rd party lib
+const cookieSession = require('cookie-session');
 const usersRepo = require('./repositories/users');
+
 const app = express();
 //Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//CookieSession Middleware
+app.use(
+  cookieSession({
+    keys: ['jshjdhj']
+  })
+);
 //Route Handler
 app.get('/', (req, res) => {
   res.send(`<div>
@@ -29,6 +37,8 @@ app.post('/', async (req, res) => {
   //Create a user in our user repo to represent this person
   const user = await usersRepo.create({ email, password });
   //Store the id of that user inside the users cookie
+  req.session.userId = user.id; //here userId can be any name. It is coming by session.
+
   res.send('Account Created');
 });
 
