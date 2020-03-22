@@ -1,9 +1,14 @@
 const express = require('express');
-const { check, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 const usersRepo = require('../../repositories/users');
 const signupTemplate = require('../../views/admin/auth/signup');
 const signinTemplate = require('../../views/admin/auth/signin');
+const {
+  validateEmail,
+  validatePassword,
+  validatePasswordConfirmation
+} = require('./validators');
 
 const router = express.Router();
 
@@ -14,32 +19,7 @@ router.get('/signup', (req, res) => {
 //signup
 router.post(
   '/signup',
-  [
-    check('email')
-      .trim()
-      .normalizeEmail()
-      .isEmail()
-      .withMessage('Must be a valid email')
-      .custom(async email => {
-        const existingUser = await usersRepo.getOneBy({ email });
-        if (existingUser) {
-          throw new Error('Email already in use.');
-        }
-      }),
-    check('password')
-      .trim()
-      .isLength({ min: 5, max: 20 })
-      .withMessage('Password must be between 5 to 20 characters'),
-    check('passwordConfirmation')
-      .trim()
-      .isLength({ min: 5, max: 20 })
-      .withMessage('Password must be between 5 to 20 characters')
-      .custom(async (passwordConfirmation, { req }) => {
-        if (passwordConfirmation !== req.body.password) {
-          throw new Error('Password must match');
-        }
-      })
-  ],
+  [validateEmail, validatePassword, validatePasswordConfirmation],
   async (req, res) => {
     const errors = validationResult(req);
     console.log(errors);
