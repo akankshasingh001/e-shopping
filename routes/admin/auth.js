@@ -18,25 +18,33 @@ router.post(
     check('email')
       .trim()
       .normalizeEmail()
-      .isEmail(),
+      .isEmail()
+      .withMessage('Must be a valid email')
+      .custom(async email => {
+        const existingUser = await usersRepo.getOneBy({ email });
+        if (existingUser) {
+          throw new Error('Email already in use.');
+        }
+      }),
     check('password')
       .trim()
-      .isLength({ min: 5, max: 20 }),
+      .isLength({ min: 5, max: 20 })
+      .withMessage('Password must be between 5 to 20 characters'),
     check('passwordConfirmation')
       .trim()
       .isLength({ min: 5, max: 20 })
+      .withMessage('Password must be between 5 to 20 characters')
+      .custom(async (passwordConfirmation, { req }) => {
+        if (passwordConfirmation !== req.body.password) {
+          throw new Error('Password must match');
+        }
+      })
   ],
   async (req, res) => {
     const errors = validationResult(req);
     console.log(errors);
     const { email, password, passwordConfirmation } = req.body;
-    const existingUser = await usersRepo.getOneBy({ email });
-    if (existingUser) {
-      return res.send('Email already in use.');
-    }
-    if (password !== passwordConfirmation) {
-      return res.send('Password must match');
-    }
+
     //Create a user in our user repo to represent this person
     const user = await usersRepo.create({ email, password });
     //Store the id of that user inside the users cookie
