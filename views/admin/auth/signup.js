@@ -15,11 +15,11 @@ module.exports = ({ req, errors }) => {
     Your id is : ${req.session.userId}
     <form method="POST">
       <input name="email" placeholder="email"/>
-      ${getErrorMessage(errors, 'email')}
+        ${getErrorMessage(errors, 'email')}
       <input name="password" placeholder="password"/>
-       ${getErrorMessage(errors, 'password')}
+        ${getErrorMessage(errors, 'password')}
       <input name="passwordConfirmation" placeholder="password confirmation"/>
-       ${getErrorMessage(errors, 'passwordConfirmation')}
+        ${getErrorMessage(errors, 'passwordConfirmation')}
       <button>Sign Up</button>
     </form>
   </div>`
